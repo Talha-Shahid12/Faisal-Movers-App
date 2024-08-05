@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "995928367407",
+    "firebase_url": "https://faisal-movers-1d63e-default-rtdb.firebaseio.com",
+    "project_id": "faisal-movers-1d63e",
+    "storage_bucket": "faisal-movers-1d63e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:995928367407:android:43c99dc2cdd90360c0c1da",
+        "android_client_info": {
+          "package_name": "com.example.faisal_movers"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVzWTLd0Jj_jAylMEOHeSY8NblBUhUcD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

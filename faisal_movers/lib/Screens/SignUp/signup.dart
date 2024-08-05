@@ -1,14 +1,12 @@
-import 'package:faisal_movers/Screens/body.dart';
+import 'package:faisal_movers/Screens/SignUp/body.dart';
 import 'package:flutter/material.dart';
 
-class SignIn extends StatefulWidget {
+class Signup extends StatefulWidget {
   @override
-  State<SignIn> createState() => _SignIn();
+  State<Signup> createState() => _Signup();
 }
 
-class _SignIn extends State<SignIn> {
-  final TextEditingController phoneNo = TextEditingController();
-
+class _Signup extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
