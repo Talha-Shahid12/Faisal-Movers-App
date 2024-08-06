@@ -1,12 +1,27 @@
 import 'package:faisal_movers/Components/CustomButton.dart';
 import 'package:faisal_movers/Screens/BookSeats/buses.dart';
+import 'package:faisal_movers/Screens/Confimation/confirmationScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SeatBookingScreen extends StatefulWidget {
   final index;
-  const SeatBookingScreen({Key? key, required this.index}) : super(key: key);
+  final from;
+  final to;
+  final departTime;
+  final arrivalTime;
+  final ticketPrice;
+  const SeatBookingScreen(
+      {Key? key,
+      required this.index,
+      required this.from,
+      required this.to,
+      required this.departTime,
+      required this.arrivalTime,
+      required this.ticketPrice})
+      : super(key: key);
 
   @override
   _SeatBookingScreenState createState() => _SeatBookingScreenState();
@@ -27,86 +42,7 @@ class _SeatBookingScreenState extends State<SeatBookingScreen> {
   @override
   void initState() {
     super.initState();
-    fetchUserData();
-  }
-
-  Future<void> fetchUserData() async {
-    String? uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid != null) {
-      final DatabaseReference userRef =
-          FirebaseDatabase.instance.ref('User/$uid');
-      try {
-        final snapshot = await userRef.get();
-        if (snapshot.exists) {
-          final userData = snapshot.value as Map<dynamic, dynamic>;
-          setState(() {
-            fullname = userData['firstName'] + " " + userData['lastName'];
-            phone = userData['phone'];
-            user_id = uid;
-          });
-        } else {
-          print('No user data available for UID: $uid');
-        }
-      } catch (e) {
-        print('Error fetching user data: $e');
-      }
-    } else {
-      print('No authenticated user found');
-    }
-  }
-
-  Future<void> createBooking(String? full_name, String? phone) async {
-    String? uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid != null) {
-      final DatabaseReference bookingRef =
-          FirebaseDatabase.instance.ref('Bookings/$uid');
-      String? buss;
-
-      final DatabaseReference busRef =
-          FirebaseDatabase.instance.ref('Buses/${widget.index}/Seats');
-
-      if (phone!.isNotEmpty &&
-          full_name!.isNotEmpty &&
-          user_id!.isNotEmpty &&
-          bookedSeats.isNotEmpty) {
-        try {
-          // Update booking information
-          await bookingRef.set({
-            'fullName': full_name,
-            'phone': phone,
-            'bookedSeats':
-                bookedSeats.toList(), // Convert Set to List for Firebase
-          });
-
-          // Update seat status in Buses node
-          Map<String, bool> seatUpdates = {};
-          for (var seat in bookedSeats) {
-            seatUpdates[seat.toString()] = true; // Set the seat status to true
-          }
-          await busRef.update(seatUpdates);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Booking Created Successfully')),
-          );
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => BusListScreen()),
-          );
-        } catch (error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to add bookings: $error')),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No field should be empty')),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No authenticated user found')),
-      );
-    }
+    // fetchUserData();
   }
 
   void _handleSeatClick(int row, int col) {
@@ -221,13 +157,17 @@ class _SeatBookingScreenState extends State<SeatBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 19, 161, 161),
+      backgroundColor: Color.fromARGB(255, 129, 175, 197),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 19, 161, 161),
+        backgroundColor: Color.fromARGB(255, 129, 175, 197),
         title: Text(
-          "Book Your Seats",
-          style: TextStyle(color: Colors.white),
+          "Select Seats",
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            color: Color.fromARGB(255, 17, 17, 29),
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -286,17 +226,26 @@ class _SeatBookingScreenState extends State<SeatBookingScreen> {
               CustomButton(
                 text: "Next",
                 onPressed: () async {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => BusListScreen()),
-                  // );
-                  if (fullname != null &&
-                      phone != null &&
-                      bookedSeats.isNotEmpty) {
-                    await createBooking(fullname, phone);
+                  if (bookedSeats.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Confirmationscreen(
+                                bookedSeats: bookedSeats,
+                                index: widget.index,
+                                from: widget.from,
+                                to: widget.to,
+                                departTime: widget.departTime,
+                                arrivalTime: widget.arrivalTime,
+                                ticketPrice: widget.ticketPrice,
+                              )),
+                    );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('No Field should be empty')),
+                      SnackBar(
+                        content:
+                            Text("You have to must select at least one seat"),
+                      ),
                     );
                   }
                 },
