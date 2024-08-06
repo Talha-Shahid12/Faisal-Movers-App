@@ -1,6 +1,7 @@
 import 'package:faisal_movers/Screens/BookSeats/seatBook.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class BusListScreen extends StatefulWidget {
   @override
@@ -56,9 +57,11 @@ class _BusListScreenState extends State<BusListScreen> {
         backgroundColor: Color.fromARGB(255, 19, 161, 161),
         title: Text(
           'Select Bus',
-          style: TextStyle(
-              color: Color.fromARGB(255, 17, 17, 29),
-              fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            color: Color.fromARGB(255, 17, 17, 29),
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
       body: busList.isEmpty
@@ -73,7 +76,13 @@ class _BusListScreenState extends State<BusListScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => BookSeats(index: ind)),
+                            builder: (context) => BookSeats(
+                                index: ind,
+                                from: bus['From'],
+                                to: bus['To'],
+                                departTime: bus['departTime'],
+                                arrivalTime: bus['arrivalTime'],
+                                ticketPrice: bus['ticketPrice'])),
                       );
                     },
                     child: BusCard(bus: busList[index]));
@@ -93,77 +102,83 @@ class BusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Color.fromARGB(255, 17, 17, 29), //fromARGB(255, 16, 16, 31)
-      margin: EdgeInsets.all(8.0),
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                height: 100,
-                width: 100,
-                child: Image.asset('assets/images/buslogo.png'),
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Padding(
+        padding: EdgeInsets.all(5.0),
+        child: Card(
+          color: Color.fromARGB(255, 17, 17, 29), //fromARGB(255, 16, 16, 31)
+          margin: EdgeInsets.all(8.0),
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  bus['From'],
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-                Container(
-                  width: 100, // Adjust the width as needed
-                  child: Divider(
-                    color: Colors.red, // Divider color
-                    thickness: 4.0, // Divider thickness
+                Center(
+                  child: Container(
+                    height: 100,
+                    width: 100,
+                    child: Image.asset('assets/images/buslogo.png'),
                   ),
                 ),
-                Text(
-                  bus['To'],
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      bus['From'],
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Container(
+                      width: 100, // Adjust the width as needed
+                      child: Divider(
+                        color: Colors.red, // Divider color
+                        thickness: 4.0, // Divider thickness
+                      ),
+                    ),
+                    Text(
+                      bus['To'],
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      bus['arrivalTime'],
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Container(
+                        width: 100, // Adjust the width as needed
+                        child: Icon(
+                          Icons.timeline,
+                          color: Colors.white,
+                        )),
+                    Text(
+                      bus['departTime'],
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            SizedBox(height: 8.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  bus['arrivalTime'],
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-                Container(
-                    width: 100, // Adjust the width as needed
-                    child: Icon(
-                      Icons.timeline,
-                      color: Colors.white,
-                    )),
-                Text(
-                  bus['departTime'],
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

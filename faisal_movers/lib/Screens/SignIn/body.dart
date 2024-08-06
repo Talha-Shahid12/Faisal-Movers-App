@@ -56,6 +56,8 @@ class _BodyState extends State<Body> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
+          child: Padding(
+        padding: EdgeInsets.only(top: 100.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -102,10 +104,10 @@ class _BodyState extends State<Body> {
                 )
               ],
             ),
-            Image.asset('assets/images/buslogo.png')
+            // Image.asset('assets/images/buslogo.png')
           ],
         ),
-      ),
+      )),
     );
   }
 }
