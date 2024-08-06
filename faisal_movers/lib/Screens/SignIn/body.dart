@@ -1,5 +1,6 @@
 import 'package:faisal_movers/Components/CustomButton.dart';
 import 'package:faisal_movers/Components/CustomTextField.dart';
+import 'package:faisal_movers/Screens/BookSeats/buses.dart';
 import 'package:faisal_movers/Screens/BookSeats/seatBook.dart';
 import 'package:faisal_movers/Screens/SignUp/signup.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _BodyState extends State<Body> {
         displaySnackMessage("Login SuccessFull", context);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => BookSeats()),
+          MaterialPageRoute(builder: (context) => BusListScreen()),
         );
       } else {
         return debugPrint("There is an error occur in second function");

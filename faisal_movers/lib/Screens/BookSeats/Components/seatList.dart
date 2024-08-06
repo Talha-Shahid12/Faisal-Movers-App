@@ -1,10 +1,12 @@
 import 'package:faisal_movers/Components/CustomButton.dart';
+import 'package:faisal_movers/Screens/BookSeats/buses.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class SeatBookingScreen extends StatefulWidget {
-  const SeatBookingScreen({Key? key}) : super(key: key);
+  final index;
+  const SeatBookingScreen({Key? key, required this.index}) : super(key: key);
 
   @override
   _SeatBookingScreenState createState() => _SeatBookingScreenState();
@@ -25,7 +27,7 @@ class _SeatBookingScreenState extends State<SeatBookingScreen> {
   @override
   void initState() {
     super.initState();
-    fetchUserData(); // Fetch user data when the screen loads
+    fetchUserData();
   }
 
   Future<void> fetchUserData() async {
@@ -56,26 +58,45 @@ class _SeatBookingScreenState extends State<SeatBookingScreen> {
   Future<void> createBooking(String? full_name, String? phone) async {
     String? uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
-      final DatabaseReference userRef =
+      final DatabaseReference bookingRef =
           FirebaseDatabase.instance.ref('Bookings/$uid');
+      String? buss;
+
+      final DatabaseReference busRef =
+          FirebaseDatabase.instance.ref('Buses/${widget.index}/Seats');
+
       if (phone!.isNotEmpty &&
           full_name!.isNotEmpty &&
           user_id!.isNotEmpty &&
           bookedSeats.isNotEmpty) {
-        userRef.set({
-          'fullName': full_name,
-          'phone': phone,
-          'bookedSeats':
-              bookedSeats.toList(), // Convert Set to List for Firebase
-        }).then((_) {
+        try {
+          // Update booking information
+          await bookingRef.set({
+            'fullName': full_name,
+            'phone': phone,
+            'bookedSeats':
+                bookedSeats.toList(), // Convert Set to List for Firebase
+          });
+
+          // Update seat status in Buses node
+          Map<String, bool> seatUpdates = {};
+          for (var seat in bookedSeats) {
+            seatUpdates[seat.toString()] = true; // Set the seat status to true
+          }
+          await busRef.update(seatUpdates);
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Booking Created Successfully')),
           );
-        }).catchError((error) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => BusListScreen()),
+          );
+        } catch (error) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to add bookings: $error')),
           );
-        });
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('No field should be empty')),
@@ -200,10 +221,10 @@ class _SeatBookingScreenState extends State<SeatBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Color.fromARGB(255, 19, 161, 161),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(255, 19, 161, 161),
         title: Text(
           "Book Your Seats",
           style: TextStyle(color: Colors.white),
@@ -225,11 +246,11 @@ class _SeatBookingScreenState extends State<SeatBookingScreen> {
 
                       Color seatColor;
                       if (status == 'male') {
-                        seatColor = Colors.blue;
+                        seatColor = Color.fromARGB(255, 57, 60, 228);
                       } else if (status == 'female') {
-                        seatColor = Colors.pink;
+                        seatColor = const Color.fromARGB(255, 184, 33, 83);
                       } else {
-                        seatColor = Colors.grey;
+                        seatColor = Color.fromARGB(255, 17, 17, 29);
                       }
 
                       Widget seatIcon = Padding(
@@ -265,11 +286,17 @@ class _SeatBookingScreenState extends State<SeatBookingScreen> {
               CustomButton(
                 text: "Next",
                 onPressed: () async {
-                  if (fullname != null && phone != null) {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => BusListScreen()),
+                  // );
+                  if (fullname != null &&
+                      phone != null &&
+                      bookedSeats.isNotEmpty) {
                     await createBooking(fullname, phone);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please fetch user data first')),
+                      SnackBar(content: Text('No Field should be empty')),
                     );
                   }
                 },
